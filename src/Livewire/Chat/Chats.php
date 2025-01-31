@@ -122,7 +122,7 @@ class Chats extends Component
                         $table = $query3->getModel()->getTable();
                         foreach ($searchableFields as $field) {
                             if ($this->columnExists($table, $field, $columnCache)) {
-                                $query3->orWhere($field, 'LIKE', '%'.$this->search.'%');
+                                $query3->orWhere($field, 'ILIKE', '%'.$this->search.'%');
                             }
                         }
                     });
@@ -133,7 +133,7 @@ class Chats extends Component
             $query->orWhereHas('group', function ($groupQuery) use ($groupSearchableFields) {
                 $groupQuery->where(function ($query4) use ($groupSearchableFields) {
                     foreach ($groupSearchableFields as $field) {
-                        $query4->orWhere($field, 'LIKE', '%'.$this->search.'%');
+                        $query4->orWhere($field, 'ILIKE', '%'.$this->search.'%');
                     }
                 });
             });
