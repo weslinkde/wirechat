@@ -122,25 +122,23 @@
                         </form>
 
                     {{-- Members count --}}
-                    <p class="mx-auto"> Members {{ $totalParticipants }} </p>
+                    <p class="mx-auto">Members {{ $totalParticipants }}</p>
 
                 </div>
 
 
                 {{-- About --}}
-                <section class=" px-8 py-5 ">
+                <section class="px-8 py-5">
                         <div @dusk="edit_description_section" x-data="{ editing: false }" @click.outside="editing=false"
-                            class="grid grid-cols-12 items-center">
+                            class="grid items-center">
 
                             {{-- Left side input --}}
                             <span class="col-span-11">
                                 <div x-show="!editing">
                                     @if (empty($description))
-                                        <p class="text-sm" style="color: var(--primary-color)">Add a group description
-                                        </p>
+                                        <p class="text-sm" style="color: var(--primary-color)">Add a group description</p>
                                     @else
-                                        <p class="font-medium break-all   whitespace-pre-line ">{{ $description }}
-                                        </p>
+                                        <p class="font-medium break-all whitespace-pre-line ">arebe {!! $description !!}</p>
                                     @endif
                                 </div>
 
@@ -189,7 +187,7 @@
                 <x-wirechat::avatar src="{{ $cover_url }}" class=" h-32 w-32 mx-auto" />
                 <h4 @dusk="group_name" class="font-medium  break-all   whitespace-pre-line   text-2xl "> {{ $groupName }} </h4>
                 <p class="mx-auto"> Members {{ $totalParticipants }} </p>
-                <p class="font-medium break-all   whitespace-pre-line ">{{ $description }} </p>
+                <p class="font-medium break-all   whitespace-pre-line ">{!! $description !!}</p>
             </div>
             @endif
 
@@ -212,7 +210,7 @@
                 </div>
 
 
-                <p class="font-medium break-all px-8 py-5   whitespace-pre-line ">{{ $description }} </p>
+                <p class="font-medium break-all px-8 py-5   whitespace-pre-line ">{!! $description !!} </p>
 
             </div>
         @endif

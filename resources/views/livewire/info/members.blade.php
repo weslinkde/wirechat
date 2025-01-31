@@ -61,7 +61,7 @@
                                 <x-wirechat::avatar src="{{ $participant->participantable->cover_url }}"
                                     class="w-10 h-10" />
 
-                                <div class="grid grid-cols-12 w-full ">
+                                <div class="grid w-full ">
                                     <h6 @class(['transition-all truncate group-hover:underline col-span-10' ])>
                                         {{ $loopParticipantIsAuth ? 'You' : $participant->participantable->display_name }}</h6>
                                         @if ($participant->isOwner()|| $participant->isAdmin())
@@ -69,7 +69,7 @@
                                             {{$participant->isOwner()? "Owner":"Admin"}}
                                         </span>
                                         @endif
-
+                                     
                                 </div>
 
                                 <div x-show="open" x-anchor.bottom-end="$refs.button"
@@ -114,7 +114,7 @@
                                                     Remove
                                                 </x-wirechat::dropdown-button>
                                                 @endif
-
+                                
                                     @else
                                     @endif
 

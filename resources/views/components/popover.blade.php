@@ -24,11 +24,7 @@
         });
     },
     popoverPositionCalculate(){
-        if(window.innerHeight < (this.$refs.popoverButton.getBoundingClientRect().top + this.$refs.popoverButton.offsetHeight + this.popoverOffset + this.popoverHeight)){
-            this.popoverPosition = 'top';
-        } else {
-            this.popoverPosition = 'bottom';
-        }
+        this.popoverPosition = 'bottom';
     }
 }"
 x-init="
@@ -37,7 +33,7 @@ x-init="
         popoverPositionCalculate();
     });
     $watch('popoverOpen', function(value){
-        if(value){ popoverPositionCalculate(); document.getElementById('width').focus();  }
+        if(value && false){ popoverPositionCalculate(); document.getElementById('width').focus();  }
     });
 "
 class="relative overflow-visible">

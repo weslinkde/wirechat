@@ -88,7 +88,7 @@
         $wire.loadMore();
     }
     "
-
+         
          class=" overflow-y-auto py-2   grow  h-full relative " style="contain:content">
 
 
@@ -109,7 +109,7 @@
                         $group = $conversation->isGroup() ? $conversation->group : null;
                         $receiver = $conversation->isGroup() ? null : $conversation->receiver?->participantable;
                         $lastMessage = $conversation->lastMessage;
-                        //mark isReadByAuth true if user has chat opened
+                        //mark isReadByAuth true if user has chat opened 
                         $isReadByAuth = $conversation?->readBy(auth()?->user()) || $selectedConversationId ==$conversation->id;
                         $belongsToAuth = $lastMessage?->belongsToAuth();
 
@@ -135,7 +135,7 @@
                                 class="w-12 h-12" />
                         </a>
 
-                        <aside class="grid  grid-cols-12 w-full">
+                        <aside class="grid w-full">
 
 
                             <a wire:navigate href="{{ route(WireChat::viewRouteName(), $conversation->id) }}"
@@ -204,8 +204,8 @@
                             {{-- Only show if AUTH is NOT onwer of message --}}
 
                             {{-- {{'read by auth ?' . $isReadByAuth}} --}}
-                            @if ($lastMessage != null && ($lastMessage?->sendable_id != $authUser?->id && $lastMessage?->sendable_type == $authUser->getMorphClass()) && !$isReadByAuth)
-
+                            @if ($lastMessage != null && ($lastMessage?->sendable_id != $authUser?->id && $lastMessage?->sendable_type == get_class($authUser)) && !$isReadByAuth)
+                                
                             <div class=" col-span-2 flex flex-col text-center my-auto">
                                 {{-- Dots icon --}}
                                 <svg @style(['color:' . $primaryColor]) xmlns="http://www.w3.org/2000/svg" width="16" height="16"
