@@ -132,7 +132,7 @@ class WireChatService
      */
     public static function indexRouteName(): string
     {
-        return 'chats';
+        return 'filament.tenant.pages.wirechats';
     }
 
     /**
@@ -140,6 +140,6 @@ class WireChatService
      */
     public static function viewRouteName(): string
     {
-        return 'chat';
+        return 'filament.tenant.pages.wirechat.{conversation}';
     }
 }
