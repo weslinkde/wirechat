@@ -12,7 +12,7 @@
         x-transition:leave-end="translate-y-full"
         class="w-full flex hidden sm:flex   py-2 sm:px-4 py-1.5 border-b dark:border-gray-700  h-96 min-w-full">
 
-        <emoji-picker dusk="emoji-picker" style="width: 100%" class=" flex w-full h-full rounded-xl"></emoji-picker>
+        <emoji-picker dusk="emoji-picker" id="emojiPicker" style="width: 100%" class="flex w-full h-full rounded-xl"></emoji-picker>
     </section>
     {{-- form and detail section  --}}
     <section
@@ -232,6 +232,14 @@
         
             }
         }" x-init="{{-- Emoji picture click event listener --}}
+             {{-- Click outside emoji picker to close it --}}
+             document.addEventListener('click', function(e) {
+                var emojiPicker = document.querySelector('emoji-picker');
+                var emojiOpenBtn = document.getElementById('openEmojiPicker');
+                if (! emojiPicker.contains(e.target) && !emojiOpenBtn.contains(e.target) && openEmojiPicker) {
+                    openEmojiPicker = ! openEmojiPicker;
+                }
+            });
              document.querySelector('emoji-picker')
             .addEventListener('emoji-click', event => {
                 // Get the emoji unicode from the event
@@ -252,6 +260,8 @@
         
         
                 inputField.setSelectionRange(startPos + emoji.length, startPos + emoji.length);
+                
+                openEmojiPicker = ! openEmojiPicker;
             });"
             @submit.prevent="((body && body?.trim().length > 0) || ($wire.media && $wire.media.length > 0)|| ($wire.files && $wire.files.length > 0)) ? $wire.sendMessage() : null"
             method="POST" autocapitalize="off" @class(['flex items-center col-span-12 w-full  gap-2 gap-5'])>
@@ -262,7 +272,7 @@
 
             {{-- Emoji Triggger icon --}}
             <div class="w-10 hidden sm:flex max-w-fit  items-center">
-                <button wire:loading.attr="disabled" type="button" dusk="emoji-trigger-button" @click="openEmojiPicker = ! openEmojiPicker"
+                <button wire:loading.attr="disabled" type="button" dusk="emoji-trigger-button" id="openEmojiPicker" @click="openEmojiPicker = ! openEmojiPicker"
                     x-ref="emojibutton" class=" disabled:cursor-progress rounded-full p-px dark:border-gray-700">
                     <svg x-bind:style="openEmojiPicker && { color: 'var(--primary-color)' }" viewBox="0 0 24 24"
                         height="24" width="24" preserveAspectRatio="xMidYMid meet"
