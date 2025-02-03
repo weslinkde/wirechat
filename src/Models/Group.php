@@ -16,6 +16,7 @@ class Group extends Model
         'conversation_id',
         'name',
         'description',
+        'model_id',
     ];
 
     protected $casts = [
@@ -67,11 +68,19 @@ class Group extends Model
         return $this->belongsTo(Conversation::class);
     }
 
+    public function group()
+    {
+        return $this->belongsTo(\App\Models\Group::class, 'model_id');
+    }
+
     public function getCoverUrlAttribute(): ?string
     {
+        if ($this->group?->groupImage) {
+            $media = $this->group->groupImage->getItem();
+            return $media?->getUrl('web');
+        }
 
-        return $this->cover?->url;
-
+        return null;
     }
 
     /**
