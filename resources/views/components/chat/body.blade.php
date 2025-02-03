@@ -132,8 +132,7 @@
 
 
                                     <h6 class="text-xs text-gray-500 dark:text-gray-300 px-2 ">
-                                        {{ $message?->ownedBy(auth()->user()) ? 'You ' : $message->sendable?->display_name ?? 'User' }}
-                                        replied to
+                                        {{ $message?->ownedBy(auth()->user()) ? __('You replied to') : $message->sendable?->display_name ?? __('User replied to') }}
 
                                         {{ $parent?->ownedBy(auth()->user()) ? ($message?->ownedBy(auth()->user()) ? 'Yourself' : ' You'):($message?->ownedBy($parent->sendable) ? 'Themself' : $parent->sendable?->display_name) }}
                                     </h6>
@@ -175,6 +174,11 @@
                                                 d="M5.921 11.9 1.353 8.62a.72.72 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z" />
                                         </svg>
                                     </button>
+                                    <x-filament::icon-button
+                                            wire:click="downloadAttachment('{{$message->id}}')"
+                                            icon="heroicon-o-arrow-down-tray"
+                                            class="invisible group-hover:visible hover:scale-110 transition-transform"
+                                            color="currentColor"/>
                                     {{-- Dropdown actions button --}}
                                     <x-wirechat::dropdown class="w-40" align="{{ $belongsToAuth ? 'right' : 'left' }}"
                                         width="48">
@@ -196,7 +200,7 @@
                                                 <button dusk="delete_message_for_everyone" wire:click="deleteForEveryone('{{ $message->id }}')"
                                                     wire:confirm="Are you sure?" class="w-full text-start">
                                                     <x-wirechat::dropdown-link>
-                                                        Delete for everyone
+                                                        {{__('Delete for everyone')}}
                                                     </x-wirechat::dropdown-link>
                                                 </button>
                                             @endif
@@ -207,7 +211,7 @@
                                             <button dusk="delete_message_for_me" wire:click="deleteForMe('{{ $message->id }}')"
                                                 wire:confirm="Are you sure?" class="w-full text-start">
                                                 <x-wirechat::dropdown-link>
-                                                    Delete for me
+                                                    {{__('Delete for me')}}
                                                 </x-wirechat::dropdown-link>
                                             </button>
                                             @endif
@@ -216,7 +220,7 @@
                                                 <button dusk="download_attachment" wire:click="downloadAttachment('{{ $message->id }}')"
                                                         class="w-full text-start">
                                                     <x-wirechat::dropdown-link>
-                                                        Download
+                                                        {{__('Download')}}
                                                     </x-wirechat::dropdown-link>
                                                 </button>
                                             @endif
@@ -224,7 +228,7 @@
 
                                             <button dusk="reply_to_message_button" wire:click="setReply('{{ $message->id }}')"class="w-full text-start">
                                                 <x-wirechat::dropdown-link>
-                                                    Reply
+                                                    {{__('Reply')}}
                                                 </x-wirechat::dropdown-link>
                                             </button>
 
@@ -256,7 +260,7 @@
                                         @endif
                                         {{-- Attachemnt is Application/ --}}
                                         @if (str()->startsWith($attachment->mime_type, 'application/'))
-                                            <x-wirechat::chat.file  :attachment="$attachment" />
+                                            <x-wirechat::chat.file  :attachment="$attachment" :message="$message" />
                                         @endif
 
                                         {{-- Attachemnt is Video/ --}}

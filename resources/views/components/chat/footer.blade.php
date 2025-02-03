@@ -260,7 +260,7 @@
         
         
                 inputField.setSelectionRange(startPos + emoji.length, startPos + emoji.length);
-                
+
                 openEmojiPicker = ! openEmojiPicker;
             });"
             @submit.prevent="((body && body?.trim().length > 0) || ($wire.media && $wire.media.length > 0)|| ($wire.files && $wire.files.length > 0)) ? $wire.sendMessage() : null"
