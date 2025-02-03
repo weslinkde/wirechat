@@ -437,6 +437,14 @@ class Chat extends Component
 
     }
 
+    public function downloadAttachment(Message $message)
+    {
+        abort_unless(auth()->user()?->belongsToConversation($message->conversation), 403);
+        abort_unless($message->attachment instanceof Attachment, 404);
+
+        return $message->attachment->download();
+    }
+
     /**
      * Delete for me means any participant of the conversation  can delete the message
      * and this will hide the message from them but other participants can still access/see it

@@ -212,6 +212,15 @@
                                             </button>
                                             @endif
 
+                                            @if ($message->hasAttachment())
+                                                <button dusk="download_attachment" wire:click="downloadAttachment('{{ $message->id }}')"
+                                                        class="w-full text-start">
+                                                    <x-wirechat::dropdown-link>
+                                                        Download
+                                                    </x-wirechat::dropdown-link>
+                                                </button>
+                                            @endif
+
 
                                             <button dusk="reply_to_message_button" wire:click="setReply('{{ $message->id }}')"class="w-full text-start">
                                                 <x-wirechat::dropdown-link>

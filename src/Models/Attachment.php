@@ -4,6 +4,7 @@ namespace Namu\WireChat\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Namu\WireChat\Facades\WireChat;
 
 class Attachment extends Model
@@ -42,5 +43,10 @@ class Attachment extends Model
     public function getCleanMimeTypeAttribute()
     {
         return explode('/', $this->mime_type)[1] ?? 'unknown';
+    }
+
+    public function download()
+    {
+        return Storage::disk(WireChat::storageDisk())->download($this->file_path);
     }
 }
