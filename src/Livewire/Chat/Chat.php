@@ -64,6 +64,8 @@ class Chat extends Component
     //Theme
     public $replyMessage = null;
 
+    public $groupView = false;
+
     public function getListeners()
     {
         // dd($this->conversation);

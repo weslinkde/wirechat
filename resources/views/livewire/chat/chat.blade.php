@@ -128,7 +128,7 @@
     }" x-init="setTimeout(() => {
         $wire.dispatch('focus-input-field');
         requestAnimationFrame(() => {
-          
+
 
             initializing = false;
         });
@@ -138,7 +138,7 @@
         loadEmojiPicker();
     "
     @scroll-bottom.window="
-        
+
 
             requestAnimationFrame(() => {
                 {{-- overflow-y: hidden; is used to hide the vertical scrollbar initially. --}}
@@ -147,12 +147,12 @@
                 {{-- scroll the element down --}}
                 conversationElement.scrollTop = conversationElement.scrollHeight;
 
-                {{-- After updating the chat height, overflowY is set back to 'auto', 
-                    which allows the browser to determine whether to display the scrollbar 
+                {{-- After updating the chat height, overflowY is set back to 'auto',
+                    which allows the browser to determine whether to display the scrollbar
                     based on the content height.  --}}
                    conversationElement.style.overflowY='auto';
             });
-  
+
     "
     class=" w-full transition  bg-white/95 dark:bg-gray-900  overflow-hidden  h-full relative" style="contain:content">
 
@@ -162,7 +162,9 @@
         {{-- ---------- --}}
         {{-- --Header-- --}}
         {{-- ---------- --}}
+        @if (!$groupView)
         <x-wirechat::chat.header :receiver="$receiver" :conversation="$conversation" />
+        @endif
 
 
         {{-- ---------- --}}
