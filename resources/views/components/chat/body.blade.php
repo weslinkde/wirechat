@@ -202,7 +202,7 @@
                                                 <button dusk="delete_message_for_everyone" wire:click="deleteForEveryone('{{ $message->id }}')"
                                                     wire:confirm="Are you sure?" class="w-full text-start">
                                                     <x-wirechat::dropdown-link>
-                                                        {{__('Delete for everyone')}}
+                                                        {{__('wirechat.Delete for everyone')}}
                                                     </x-wirechat::dropdown-link>
                                                 </button>
                                             @endif
@@ -213,7 +213,7 @@
                                             <button dusk="delete_message_for_me" wire:click="deleteForMe('{{ $message->id }}')"
                                                 wire:confirm="Are you sure?" class="w-full text-start">
                                                 <x-wirechat::dropdown-link>
-                                                    {{__('Delete for me')}}
+                                                    {{__('wirechat.Delete for me')}}
                                                 </x-wirechat::dropdown-link>
                                             </button>
                                             @endif
@@ -222,7 +222,7 @@
                                                 <button dusk="download_attachment" wire:click="downloadAttachment('{{ $message->id }}')"
                                                         class="w-full text-start">
                                                     <x-wirechat::dropdown-link>
-                                                        {{__('Download')}}
+                                                        {{__('wirechat.Download')}}
                                                     </x-wirechat::dropdown-link>
                                                 </button>
                                             @endif
@@ -230,7 +230,7 @@
 
                                             <button dusk="reply_to_message_button" wire:click="setReply('{{ $message->id }}')"class="w-full text-start">
                                                 <x-wirechat::dropdown-link>
-                                                    {{__('Reply')}}
+                                                    {{__('wirechat.Reply')}}
                                                 </x-wirechat::dropdown-link>
                                             </button>
 

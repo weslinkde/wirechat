@@ -31,7 +31,7 @@
                         class="h-8 w-8 lg:w-10 lg:h-10 " />
                     <h6 class="font-bold text-base text-gray-800 dark:text-white w-full truncate">
                         {{ $group ? $group?->name : $receiver?->display_name }} @if ($conversation->isSelfConversation())
-                            ({{__('You')}})
+                            ({{__('wirechat.You')}})
                         @endif
                     </h6>
                 </div>
@@ -54,26 +54,26 @@
                     <x-slot name="content">
 
                         <x-wirechat::dropdown-link href='{{ route(WireChat::indexRouteName()) }}'>
-                            {{__('Close Chat')}}
+                            {{__('wirechat.Close Chat')}}
                         </x-wirechat::dropdown-link>
 
 
                     {{-- Only show delete and clear if conversation is NOT group --}}
                     @if (!$conversation->isGroup())
                     <button class="w-full" wire:click="clearConversation"
-                        wire:confirm="{{__('Are you sure you want to clear this Chat History?')}}">
+                        wire:confirm="{{__('wirechat.Are you sure you want to clear this Chat History?')}}">
 
                         <x-wirechat::dropdown-link>
-                            {{__('Clear Chat History')}}
+                            {{__('wirechat.Clear Chat History')}}
                         </x-wirechat::dropdown-link>
                     </button>
 
                     <button wire:click="deleteConversation"
-                        wire:confirm="Are you sure delete {{ $conversation->isGroup() ? 'Group' : 'Chat' }}"
+                        wire:confirm="Are you sure delete you want to delete {{ $conversation->isGroup() ? 'Group' : 'Chat' }}"
                         class="w-full text-start">
 
                         <x-wirechat::dropdown-link class="text-red-500 dark:text-red-500">
-                            {{__('Delete Chat')}}
+                            {{__('wirechat.Delete Chat')}}
                         </x-wirechat::dropdown-link>
 
                     </button>
@@ -85,7 +85,7 @@
                                 class="w-full text-start ">
 
                                 <x-wirechat::dropdown-link class="text-red-500 dark:text-gray-500">
-                                    Exit Group
+                                    {{__('wirechat.Exit Group')}}
                                 </x-wirechat::dropdown-link>
 
                             </button>

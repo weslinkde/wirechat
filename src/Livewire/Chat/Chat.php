@@ -524,13 +524,13 @@ class Chat extends Component
         $messageDate = $message->created_at;
         $groupKey = '';
         if ($messageDate->isToday()) {
-            $groupKey = 'Today';
+            $groupKey = __('wirechat.Today');
         } elseif ($messageDate->isYesterday()) {
-            $groupKey = 'Yesterday';
+            $groupKey = __('wirechat.Yesterday');
         } elseif ($messageDate->greaterThanOrEqualTo(now()->subDays(7))) {
-            $groupKey = $messageDate->format('l'); // Day name
+            $groupKey = $messageDate->translatedFormat('l'); // Day name
         } else {
-            $groupKey = $messageDate->format('d/m/Y'); // Older than 7 days, dd/mm/yyyy
+            $groupKey = $messageDate->translatedFormat('d/m/Y'); // Older than 7 days, dd/mm/yyyy
         }
 
         return $groupKey;
