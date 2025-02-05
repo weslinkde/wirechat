@@ -123,14 +123,16 @@ class Chats extends Component
     protected function applySearchConditions($query)
     {
         $searchableFields = WireChat::searchableFields();
-        $groupSearchableFields = ['name', 'description'];
-        $columnCache = [];
+        $groupSearchableFields = ['name'];
 
         $query->withoutGlobalScope(WithoutDeletedScope::class)->where(function ($query) use ($searchableFields, $groupSearchableFields, &$columnCache) {
             // Search in participants' participantable fields
             $query->whereHas('participants', function ($subquery) use ($searchableFields, &$columnCache) {
-                $subquery->whereHas('participantable', function ($query2) use ($searchableFields, &$columnCache) {
-                    $query2->where(function ($query3) use ($searchableFields, &$columnCache) {
+                $subquery->where('type', '!=', 'group')
+                    ->whereHas('participantable', function ($query2) use ($searchableFields, &$columnCache) {
+                    $query2
+                        ->where('participantable_id', '!=', auth()->id())
+                        ->where(function ($query3) use ($searchableFields, &$columnCache) {
                         $table = $query3->getModel()->getTable();
                         foreach ($searchableFields as $field) {
                             if ($this->columnExists($table, $field, $columnCache)) {
