@@ -2,6 +2,7 @@
 
 namespace Namu\WireChat\Livewire\Chat;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 use Namu\WireChat\Facades\WireChat;
@@ -47,7 +48,6 @@ class Chats extends Component
 
         //Check if no more conversations
         if (! $this->canLoadMore) {
-            // dd('cannot load more');
             return null;
         }
 
@@ -95,16 +95,28 @@ class Chats extends Component
             ->take($perPage)
             ->get(); // Fetch only required fields
 
-        //    dd($additionalConversations->first);
+        if (! empty(trim($this->search))) {
+            $existingUserIds = $additionalConversations->reject->isGroup()->map(function ($conversation) {
+                return $conversation->receiver->participantable?->id;
+            });
+            $existingUserIds->push(auth()->id());
+            $additionalUsers = User::query()
+                ->whereNotIn('id', $existingUserIds->filter()->toArray())
+                ->where('name', 'ilike', '%'.$this->search.'%')
+                ->get();
+        } else {
+            $additionalUsers = collect();
+        }
+
         // Check if there are more conversations for the next page
         $this->canLoadMore = $additionalConversations->count() === $perPage;
 
         // Merge and sort conversations
         $this->conversations = collect($this->conversations)
             ->concat($additionalConversations) // Append new conversations
-            ->unique('id') // Ensure unique conversation IDs
-            ->sortByDesc('updated_at') // Sort by updated_at in descending order
-            ->values(); // Reset the array keys
+
+            ->concat($additionalUsers)
+            ->values();
     }
 
     //Helper method for applying search logic

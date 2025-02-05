@@ -94,7 +94,7 @@
 
         @if (config('wirechat.allow_chats_search', false) == true)
             <div x-cloak wire:loading.delay.class.remove="hidden"
-                wire:target="search"class="hidden transition-all duration-300 ">
+                wire:target="search" class="hidden transition-all duration-300 ">
                 <x-wirechat::loading-spin />
             </div>
         @endif
@@ -102,14 +102,31 @@
         @if (count($conversations) > 0)
             {{-- chatlist  --}}
             <ul wire:loading.delay.long.remove wire:target="search" class="p-2 grid w-full spacey-y-2">
-
                 @foreach ($conversations as $conversation)
+                    @if ($conversation instanceof \App\Models\User)
+                        <li id="user-conversation-{{ $conversation->id }}" wire:key="user-conversation-{{ $conversation->id }}"
+                            class="py-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-sm transition-colors duration-150 flex gap-4 relative w-full cursor-pointer px-2">
+                            <a href="{{ route('filament.tenant.pages.chat', ['conversation' => -1, 'createFor' => $conversation->ulid]) }}" class="shrink-0">
+                                <x-wirechat::avatar disappearing="0" group="0" src="{{ $conversation->cover_url ?? null }}" class="w-12 h-12" />
+                            </a>
+                            <aside class="grid w-full">
+                                <a href="{{ route('filament.tenant.pages.chat', ['conversation' => -1, 'createFor' => $conversation->ulid]) }}"
+                                   class="col-span-10 border-b pb-2 border-gray-100 dark:border-gray-700 relative overflow-hidden truncate leading-5 w-full flex-nowrap p-1">
+                                    <div class="flex gap-1 mb-1 w-full items-center">
+                                        <h6 class="truncate font-medium text-gray-900 dark:text-white">
+                                            {{ $conversation->display_name }}
+                                        </h6>
+                                    </div>
+                                </a>
+                            </aside>
+                        </li>
+                    @else
                     @php
                         //$receiver =$conversation->getReceiver();
                         $group = $conversation->isGroup() ? $conversation->group : null;
                         $receiver = $conversation->isGroup() ? null : $conversation->receiver?->participantable;
                         $lastMessage = $conversation->lastMessage;
-                        //mark isReadByAuth true if user has chat opened 
+                        //mark isReadByAuth true if user has chat opened
                         $isReadByAuth = $conversation?->readBy(auth()?->user()) || $selectedConversationId ==$conversation->id;
                         $belongsToAuth = $lastMessage?->belongsToAuth();
 
@@ -136,8 +153,6 @@
                         </a>
 
                         <aside class="grid w-full">
-
-
                             <a wire:navigate href="{{ route(WireChat::viewRouteName(), $conversation->id) }}"
                                 class="col-span-10 border-b pb-2 border-gray-100 dark:border-gray-700 relative overflow-hidden truncate leading-5 w-full flex-nowrap p-1">
 
@@ -205,7 +220,7 @@
 
                             {{-- {{'read by auth ?' . $isReadByAuth}} --}}
                             @if ($lastMessage != null && ($lastMessage?->sendable_id != $authUser?->id && $lastMessage?->sendable_type == get_class($authUser)) && !$isReadByAuth)
-                                
+
                             <div class=" col-span-2 flex flex-col text-center my-auto">
                                 {{-- Dots icon --}}
                                 <svg @style(['color:' . $primaryColor]) xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -220,6 +235,7 @@
                         </aside>
 
                     </li>
+                    @endif
                 @endforeach
 
             </ul>
