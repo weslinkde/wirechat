@@ -24,8 +24,7 @@
         {{-- Receiver wirechat::Avatar --}}
         <section class="flex w-full">
             <div class="shrink-0 col-span-11 truncate overflow-h-hidden relative">
-                <div wire:click="$dispatch('openChatDrawer', {component: 'info',arguments: { conversation: {{ $conversation->id }} }})"
-                    class="flex items-center gap-2 cursor-pointer ">
+                <div class="flex items-center gap-2 cursor-pointer ">
                     <x-wirechat::avatar disappearing="{{$conversation->hasDisappearingTurnedOn()}}" group="{{ $conversation->isGroup() }}"
                         src="{{ $group ? $group?->cover_url : $receiver?->cover_url ?? null }}"
                         class="h-8 w-8 lg:w-10 lg:h-10 " />

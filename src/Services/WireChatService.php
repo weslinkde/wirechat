@@ -87,6 +87,11 @@ class WireChatService
         return config('wirechat.show_new_chat_modal_button', false);
     }
 
+    public static function showHomeButton(): bool
+    {
+        return config('wirechat.show_home_button', false);
+    }
+
     /**
      * Maximum members allowed per group
      */
