@@ -114,7 +114,8 @@ class Chats extends Component
         // Merge and sort conversations
         $this->conversations = collect($this->conversations)
             ->concat($additionalConversations) // Append new conversations
-
+            ->unique('id') // Ensure unique conversation IDs
+            ->sortByDesc('updated_at') // Sort by updated_at in descending order
             ->concat($additionalUsers)
             ->values();
     }
