@@ -19,12 +19,6 @@ class NotifyParticipant implements ShouldBroadcastNow
 
     public function __construct(public Participant $participant, public Message $message)
     {
-
-        //  $this->dontBroadcastToCurrentUser();
-
-        // dd($message->conversation->isPrivate());
-        //  Log::info($participant);
-
     }
 
     /**
@@ -38,11 +32,7 @@ class NotifyParticipant implements ShouldBroadcastNow
     public function broadcastWhen(): bool
     {
         // Check if the message is not older than 60 seconds
-        $isNotExpired = Carbon::parse($this->message->created_at)->gt(Carbon::now()->subMinute(1));
-
-        //  Log::info(['NotifyParticipant isNotExpired'=>$isNotExpired]);
-
-        return $isNotExpired;
+        return Carbon::parse($this->message->created_at)->gt(Carbon::now()->subMinute(1));
     }
 
     public function broadcastOn(): array
