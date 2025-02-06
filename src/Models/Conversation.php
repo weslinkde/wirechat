@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\DB;
 use Namu\WireChat\Enums\Actions;
 use Namu\WireChat\Enums\ConversationType;
@@ -418,12 +419,22 @@ class Conversation extends Model
      */
     public function markAsRead(?Model $user = null)
     {
-
         $user = $user ?? auth()->user();
-        if ($user == null) {
-
+        if (! $user) {
             return null;
-            // code...
+        }
+
+        if ($this->messages->count()) {
+            $stringMessageIds = array_map(function ($value) {
+                return (string) $value;
+            }, $this->messages->pluck('id')->toArray());
+
+            $notifications = DatabaseNotification::where('data->causer_type', Message::class)
+                ->whereIn('data->causer_id', $stringMessageIds);
+
+            //$notifications->ddRawSql(); //debug query
+
+            $notifications->get()->each->update(['read_at' => now()]);
         }
 
         $this->participant($user)?->update(['conversation_read_at' => now()]);
