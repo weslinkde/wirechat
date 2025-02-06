@@ -342,11 +342,6 @@ class Chat extends Component
 
             $createdMessages = [];
             foreach ($attachments as $key => $attachment) {
-
-                /**
-                 * todo: Add url to table
-                 */
-
                 //save photo to disk
                 $path = $attachment->store(config('wirechat.attachments.storage_folder', 'attachments'), config('wirechat.attachments.storage_disk', 'public'));
 
@@ -611,8 +606,8 @@ class Chat extends Component
             }
 
         } catch (\Throwable $th) {
-
-            Log::error($th->getMessage());
+            report($th);
+            //Log::error($th);
         }
     }
 

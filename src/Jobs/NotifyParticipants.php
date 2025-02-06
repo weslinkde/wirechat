@@ -2,6 +2,8 @@
 
 namespace Namu\WireChat\Jobs;
 
+use App\Jobs\CreateDatabaseNotificationsJob;
+use App\Notifications\CauserDatabaseNotification;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -41,16 +43,10 @@ class NotifyParticipants implements ShouldQueue
         #[WithoutRelations]
         public Message $message)
     {
-        //
         $this->onQueue(WireChat::notificationsQueue());
-        //  $this->delay(now()->addSeconds(3)); // Delay
         $this->auth = $message->sendable;
-
         //Get table
         $this->participantsTable = (new Participant)->getTable();
-
-        //dd($this);
-
     }
 
     /**
@@ -86,7 +82,6 @@ class NotifyParticipants implements ShouldQueue
          * so that the most recently active participants are notified first. */
         Participant::where('conversation_id', $this->conversation->id)
         //exclude current user
-        // ->with('participantable')
             ->where(function ($query) {
                 $query->where('participantable_id', '!=', $this->auth->id)
                     ->where('participantable_type', get_class($this->auth));
@@ -95,8 +90,39 @@ class NotifyParticipants implements ShouldQueue
             ->chunk(50, function ($participants) {
                 foreach ($participants as $key => $participant) {
                     broadcast(new NotifyParticipant($participant, $this->message));
+                    $this->participantNotification($participant, $this->message);
                 }
             });
 
+    }
+
+    private function participantNotification($participant, Message $message)
+    {
+        $user = $participant->participantable;
+        if (! $user) {
+            return;
+        }
+
+        $messageBody = $message->body ?: __('wirechat.Sent an attachment');
+        $messageUrl = route(WireChat::viewRouteName(), [$message->conversation->id]);
+        $notification = CreateDatabaseNotificationsJob::createNotification($this->auth, 1, $messageBody, $messageUrl);
+
+        $causer = [
+            'causer_type' => Message::class,
+            'causer_id' => $message->id,
+        ];
+
+        if ($user->online) {
+            if (! $user->is_chat_open /*|| $this->auth->id !== $user->active_chat*/) {
+                \Log::debug('do notify participant');
+                $user->notify($notification->toBroadcast());
+                //Uncomment the following line to enable database notification (notification bell)
+                $user->notify(new CauserDatabaseNotification($notification, $causer));
+            }
+            \Log::debug('chat is open, noop, dont notify');
+        } else {
+            \Log::debug('participant not online, send database notification');
+            $user->notify(new CauserDatabaseNotification($notification, $causer));
+        }
     }
 }
