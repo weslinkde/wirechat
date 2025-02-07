@@ -77,7 +77,7 @@ class Members extends ModalComponent
 
         $conversation = auth()->user()->createConversationWith($participant->participantable);
 
-        return redirect()->route(WireChat::viewRouteName(), [$conversation->id]);
+        return redirect()->route(WireChat::viewRouteName(), [$conversation->ulid]);
     }
 
     /**

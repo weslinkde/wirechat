@@ -145,7 +145,7 @@
                                 $selectedConversationId == $conversation?->id,
                         ])>
 
-                        <a href="{{ route(WireChat::viewRouteName(), $conversation->id) }}" class="shrink-0">
+                        <a href="{{ route(WireChat::viewRouteName(), $conversation->ulid) }}" class="shrink-0">
                             <x-wirechat::avatar disappearing="{{ $conversation->hasDisappearingTurnedOn() }}"
                                 group="{{ $conversation->isGroup() }}"
                                 src="{{ $group ? $group?->cover_url : $receiver?->cover_url ?? null }}"
@@ -153,7 +153,7 @@
                         </a>
 
                         <aside class="grid w-full">
-                            <a wire:navigate href="{{ route(WireChat::viewRouteName(), $conversation->id) }}"
+                            <a wire:navigate href="{{ route(WireChat::viewRouteName(), $conversation->ulid) }}"
                                 class="col-span-10 border-b pb-2 border-gray-100 dark:border-gray-700 relative overflow-hidden truncate leading-5 w-full flex-nowrap p-1">
 
                                 {{-- name --}}

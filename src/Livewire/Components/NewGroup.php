@@ -153,7 +153,7 @@ class NewGroup extends ModalComponent
         }
 
         //redirect to view route
-        return redirect()->route(WireChat::viewRouteName(), [$conversation->id]);
+        return redirect()->route(WireChat::viewRouteName(), [$conversation->ulid]);
 
     }
 

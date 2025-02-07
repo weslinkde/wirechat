@@ -624,7 +624,7 @@ class Chat extends Component
             'conversation_id' => $this->conversation->id,
             'sendable_type' => auth()->user()->getMorphClass(), // Polymorphic sender type
             'sendable_id' => auth()->id(), // Polymorphic sender ID
-            'body' => '❤️',
+            'body' => '✅️',
             'type' => MessageType::TEXT,
         ]);
 
@@ -698,7 +698,7 @@ class Chat extends Component
     {
         abort_unless(auth()->check(), 401);
 
-        $this->conversation = Conversation::where('id', $this->conversation)
+        $this->conversation = Conversation::where('ulid', $this->conversation)
             ->firstOr(fn () => abort(404));
 
         $this->totalMessageCount = Message::where('conversation_id', $this->conversation->id)->count();

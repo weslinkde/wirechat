@@ -104,7 +104,7 @@ class NotifyParticipants implements ShouldQueue
         }
 
         $messageBody = $message->body ?: __('wirechat.Sent an attachment');
-        $messageUrl = route(WireChat::viewRouteName(), [$message->conversation->id]);
+        $messageUrl = route(WireChat::viewRouteName(), [$message->conversation->ulid]);
         $notification = CreateDatabaseNotificationsJob::createNotification($this->auth, 1, $messageBody, $messageUrl);
 
         $causer = [

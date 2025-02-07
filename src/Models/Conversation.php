@@ -6,6 +6,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -21,6 +22,7 @@ class Conversation extends Model
 {
     use Actionable;
     use HasFactory;
+    use HasUlids;
 
     protected $fillable = [
         'disappearing_started_at',
@@ -38,6 +40,11 @@ class Conversation extends Model
         $this->table = WireChat::formatTableName('conversations');
 
         parent::__construct($attributes);
+    }
+
+    public function uniqueIds(): array
+    {
+        return ['ulid'];
     }
 
     protected static function boot()
