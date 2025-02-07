@@ -68,7 +68,7 @@
                     </button>
 
                     <button wire:click="deleteConversation"
-                        wire:confirm="Are you sure delete you want to delete {{ $conversation->isGroup() ? 'Group' : 'Chat' }}"
+                        wire:confirm="{{__('wirechat.Are you sure delete you want to delete Chat')}}"
                         class="w-full text-start">
 
                         <x-wirechat::dropdown-link class="text-red-500 dark:text-red-500">

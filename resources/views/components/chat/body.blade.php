@@ -128,13 +128,20 @@
                                     'ml-auto' => $belongsToAuth,
                                     // 'ml-9 sm:ml-10' => !$belongsToAuth,
                                 ])>
-
-
-
                                     <h6 class="text-xs text-gray-500 dark:text-gray-300 px-2 ">
-                                        {{ $message?->ownedBy(auth()->user()) ? __('You replied to') : $message->sendable?->display_name ?? __('User replied to') }}
-
-                                        {{ $parent?->ownedBy(auth()->user()) ? ($message?->ownedBy(auth()->user()) ? 'Yourself' : ' You'):($message?->ownedBy($parent->sendable) ? 'Themself' : $parent->sendable?->display_name) }}
+                                        @if ($message?->ownedBy(auth()->user()))
+                                            @if($parent?->ownedBy(auth()->user()))
+                                                {{__('wirechat.You replied to Yourself')}}
+                                            @else
+                                                {{__('wirechat.You replied to :reciever', ['reciever' => $parent->sendable?->display_name])}}
+                                            @endif
+                                        @else
+                                            @if($parent?->ownedBy(auth()->user()))
+                                                {{__('wirechat.:sender replied to You', ['sender' => $message->sendable->display_name])}}
+                                            @else
+                                                {{__('wirechat.:sender replied to Themself', ['sender' => $message->sendable->display_name])}}
+                                            @endif
+                                        @endif
                                     </h6>
 
                                     <div @class([
@@ -144,7 +151,7 @@
                                     ])>
                                         <p
                                             class=" bg-gray-100 dark:text-white  dark:bg-gray-600 text-black line-clamp-1 text-sm  rounded-full max-w-fit   px-3 py-1 ">
-                                            {{ $parent?->body != '' ? $parent?->body : ($parent->hasAttachment() ? 'Attachment' : '') }}
+                                            {{ $parent?->body != '' ? $parent?->body : ($parent->hasAttachment() ? __('wirechat.Attachment') : '') }}
                                         </p>
                                     </div>
 
