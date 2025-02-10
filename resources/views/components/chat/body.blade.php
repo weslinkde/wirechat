@@ -81,7 +81,7 @@
                 @php
                     $belongsToAuth = $message->belongsToAuth();
                     $parent = $message->parent ?? null;
-                    $attachment = $message->attachment ?? null;
+                    $attachment = $isGroup ? $message->groupAttachment() : ($message->attachment ?? null);
                     $isEmoji = mb_ereg('^(?:\X(?=\p{Emoji}))*\X$', $message->body ?? '');
 
                     // keep track of previous message

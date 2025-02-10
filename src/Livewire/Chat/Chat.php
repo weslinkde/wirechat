@@ -2,7 +2,9 @@
 
 namespace Namu\WireChat\Livewire\Chat;
 
+use App\Models\Media;
 use App\Models\User;
+use App\Services\MediaFolderService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\RateLimiter;
@@ -26,6 +28,7 @@ use Namu\WireChat\Models\Conversation;
 use Namu\WireChat\Models\Message;
 use Namu\WireChat\Models\Participant;
 use Namu\WireChat\Notifications\NewMessageNotification;
+use RalphJSmit\Filament\MediaLibrary\FilamentMediaLibrary;
 
 class Chat extends Component
 {
@@ -290,9 +293,6 @@ class Chat extends Component
      * Send a message  */
     public function sendMessage()
     {
-
-        //dd($this->body);
-
         abort_unless(auth()->check(), 401);
 
         //rate limit
@@ -302,7 +302,6 @@ class Chat extends Component
         // Combine media and files arrays
 
         $attachments = array_merge($this->media, $this->files);
-        //    dd(config('wirechat.file_mimes'));
 
         // If combined files array is empty, continue to validate body
         if (empty($attachments)) {
@@ -337,13 +336,20 @@ class Chat extends Component
 
                 return $this->dispatch('wirechat-toast', type: 'warning', message: $th->getMessage());
             }
-
-            //Combine media and files thne perform loop together
+            $mediaLibraryFolder = null;
+            if ($this->groupView && $this->conversation->group?->group) {
+                $groupFolder = MediaFolderService::createDefaultFolder(
+                    model: $this->conversation->group->group,          // Pass the Namu\WireChat\Models\Group instance
+                    groupId: $this->conversation->group->group->id,    // ID of the App\Models\Group
+                    title: $this->conversation->group->name,    // Name of the group
+                    folderToken: null       // Default token (null in this case)
+                );
+                $folderService = new MediaFolderService($this->conversation->group);
+                $mediaLibraryFolder = $folderService->updateOrCreateFolder('Chat', null, $groupFolder);
+            }
 
             $createdMessages = [];
             foreach ($attachments as $key => $attachment) {
-                //save photo to disk
-                $path = $attachment->store(config('wirechat.attachments.storage_folder', 'attachments'), config('wirechat.attachments.storage_disk', 'public'));
 
                 // Determine the reply ID based on conditions
                 $replyId = ($key === 0 && $this->replyMessage) ? $this->replyMessage->id : null;
@@ -357,15 +363,13 @@ class Chat extends Component
                     'type' => MessageType::ATTACHMENT,
                     // 'body' => $this->body, // Add body if required
                 ]);
-
-                // Create and associate the attachment with the message
-                $message->attachment()->create([
-                    'file_path' => $path,
-                    'file_name' => basename($path),
-                    'original_name' => $attachment->getClientOriginalName(),
-                    'mime_type' => $attachment->getMimeType(),
-                    'url' => Storage::url($path),
-                ]);
+                if ($mediaLibraryFolder) {
+                    $mediaItem = FilamentMediaLibrary::get()->getModelItem()::addUpload($attachment, $mediaLibraryFolder);
+                    $message->mediaItems()->wherePivot('media_type', 'chat_attachment')->detach();
+                    $message->mediaItems()->attach($mediaItem->id, ['media_type' => 'chat_attachment']);
+                } else {
+                    $message->addMedia($attachment)->toMediaCollection('attachments');
+                }
 
                 //append message to createdMessages
                 $createdMessages[] = $message;
@@ -437,9 +441,12 @@ class Chat extends Component
     public function downloadAttachment(Message $message)
     {
         abort_unless(auth()->user()?->belongsToConversation($message->conversation), 403);
-        abort_unless($message->attachment instanceof Attachment, 404);
 
-        return $message->attachment->download();
+        $attachment = $message->conversation->isGroup() ? $message->groupAttachment() : $message->attachment;
+
+        abort_unless($attachment instanceof Media, 404);
+
+        return $attachment->downloadWithAccess();
     }
 
     /**

@@ -4,7 +4,6 @@
     'nextMessage'=>$nextMessage,
     'belongsToAuth'=>$belongsToAuth,
     'attachment'=>$attachment
-
 ])
 
 <div>
@@ -28,5 +27,5 @@
     &&$nextMessage?->sender_id!=$message?->sender_id) && !$belongsToAuth,
     //last message on LEFT
     'rounded-bl-2xl'=>($message?->sender_id!=$nextMessage?->sender_id ) && !$belongsToAuth,
-    ]) loading="lazy" src="{{$attachment?->url}}" alt="attachment">
+    ]) loading="lazy" src="{{$attachment->getUrl('preview')}}" alt="attachment">
 </div>

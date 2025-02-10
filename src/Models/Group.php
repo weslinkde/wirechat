@@ -73,6 +73,11 @@ class Group extends Model
         return $this->belongsTo(\App\Models\Group::class, 'model_id');
     }
 
+    public function getNameAttribute($value): ?string
+    {
+        return $this->group ? $this->group->name : $value;
+    }
+
     public function getCoverUrlAttribute(): ?string
     {
         if ($this->group?->groupImage) {

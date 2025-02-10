@@ -2,6 +2,8 @@
 
 namespace Namu\WireChat\Models;
 
+use App\Models\Media;
+use App\Models\Traits\HasMediaItems;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,12 +14,17 @@ use Namu\WireChat\Enums\Actions;
 use Namu\WireChat\Enums\MessageType;
 use Namu\WireChat\Facades\WireChat;
 use Namu\WireChat\Traits\Actionable;
+use Spatie\Image\Manipulations;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Message extends Model
+class Message extends Model implements HasMedia
 {
     use Actionable;
     use HasFactory;
     use SoftDeletes;
+    use InteractsWithMedia;
+    use HasMediaItems;
 
     protected $fillable = [
         'body',
@@ -53,6 +60,16 @@ class Message extends Model
     public function sendable()
     {
         return $this->morphTo();
+    }
+
+    public function registerMediaConversions(Media|\Spatie\MediaLibrary\MediaCollections\Models\Media|null $media = null): void
+    {
+        $this
+            ->addMediaConversion('preview')
+            ->fit(Manipulations::FIT_CROP, 300, 300)
+            ->nonQueued();
+        $this->addMediaConversion('web')
+            ->fit(Manipulations::FIT_MAX, 1500, 1500);
     }
 
     /**
@@ -100,15 +117,10 @@ class Message extends Model
         // listen to deleted
         static::deleted(function ($message) {
 
-            if ($message->attachment?->exists()) {
-
+            if ($message->hasMedia('attachments')) {
+                $attachment = $message->media('attachments')->get()->first();
                 //delete attachment
-                $message->attachment?->delete();
-
-                //also delete from storage
-                if (file_exists(Storage::disk(config('wirechat.attachments.storage_disk', 'public'))->exists($message->attachment->file_path))) {
-                    Storage::disk(config('wirechat.attachments.storage_disk', 'public'))->delete($message->attachment->file_path);
-                }
+                $attachment?->delete();
             }
 
             // Use a DB transaction to ensure atomicity
@@ -121,12 +133,21 @@ class Message extends Model
 
     public function attachment()
     {
-        return $this->morphOne(Attachment::class, 'attachable');
+        return $this->morphOne(config('media-library.media_model'), 'model');
+    }
+
+    public function groupAttachment(): ?Media
+    {
+        return $this->mediaItems()->wherePivot('media_type', 'chat_attachment')->first()?->getItem();
     }
 
     public function hasAttachment()
     {
-        return $this->attachment()->exists();
+        if ($this->conversation->isGroup()) {
+            return $this->groupAttachment() instanceof Media;
+        }
+
+        return $this->hasMedia('attachments');
     }
 
     /**

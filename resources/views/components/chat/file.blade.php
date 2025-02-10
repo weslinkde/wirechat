@@ -11,7 +11,7 @@
         </svg>
     </span>
     <p class="mt-auto  p-2 text-gray-600 dark:text-gray-100 text-sm">
-        {{$attachment->original_name}}
+        {{$attachment->name}}
     </p>
 
     <button wire:click="downloadAttachment('{{ $message->id }}')" class="px-3 bg-gray-50 dark:bg-gray-800 group-hover:bg-gray-100 dark:group-hover:bg-gray-600 transition-colors ease-in-out dark:hover:text-blue-500 hover:text-blue-500 dark:text-white p-1 mt-auto h-full">
