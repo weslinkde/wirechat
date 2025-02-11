@@ -337,6 +337,7 @@ class Chat extends Component
                 return $this->dispatch('wirechat-toast', type: 'warning', message: $th->getMessage());
             }
             $mediaLibraryFolder = null;
+            // Create folder structure in media library for group attachments
             if ($this->groupView && $this->conversation->group?->group) {
                 $groupFolder = MediaFolderService::createDefaultFolder(
                     model: $this->conversation->group->group,          // Pass the Namu\WireChat\Models\Group instance
@@ -380,6 +381,7 @@ class Chat extends Component
 
                 //dispatch event 'refresh ' to chatlist
                 $this->dispatch('refresh')->to(Chats::class);
+                $this->dispatch('scroll-bottom');
 
                 //broadcast message
                 $this->dispatchMessageCreatedEvent($message);
@@ -594,22 +596,12 @@ class Chat extends Component
             // sleep(3);
             broadcast(new MessageCreated($message))->toOthers();
 
-            //if conversation is private then Notify particpant immediately
             if ($this->conversation->isPrivate() || $this->conversation->isSelf()) {
-
                 if ($this->conversation->isPrivate() && $this->receiverParticipant) {
-
-                    //   broadcast(new NotifyParticipant($this->receiverParticipant, $message))->toOthers();
-
                     NotifyParticipants::dispatch($this->conversation, $message);
-                    //    Notification::send($this->receiver, new NewMessageNotification($message));
-
                 }
-
             } else {
-                // code...
                 NotifyParticipants::dispatch($this->conversation, $message);
-
             }
 
         } catch (\Throwable $th) {
