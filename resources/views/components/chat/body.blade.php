@@ -13,11 +13,7 @@
     previousHeight: 0,
     updateScrollPosition: function() {
         // Calculate the difference in height
-
         newHeight = document.getElementById('conversation').scrollHeight;
-
-        {{-- console.log('old height' + height);
-        console.log('new height' + document.getElementById('conversation').scrollHeight); --}}
         heightDifference = newHeight - height;
 
         {{-- console.log('conversationElement.scrollTop ' + conversationElement.scrollTop);
@@ -38,6 +34,7 @@
         "
     @scroll ="
         scrollTop= $el.scrollTop;
+        this.height = document.getElementById('conversation').scrollHeight;
         if((scrollTop<=0) && $wire.canLoadMore){
             $wire.loadMore();
         }
