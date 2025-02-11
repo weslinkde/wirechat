@@ -3,7 +3,7 @@
 @props(['media','files','replyMessage','',''])
 
 <div id="chat-footer" x-data="{ 'openEmojiPicker': false }"
-    class=" px-3 md:px-1 border-t shadow   dark:bg-gray-800 bg-gray-50 z-[50]    dark:border-gray-800/80  flex flex-col gap-3 items-center  w-full   mx-auto">
+    class=" px-3 md:px-1 border-t shadow   dark:bg-gray-800 bg-gray-50 z-[50]    dark:border-gray-800/80  flex flex-col gap-3 items-center  w-full   mx-auto fi-sticky sticky bottom-0">
 
     {{-- Emoji section , we put it seperate to avoid interfering as overlay for form when opened --}}
     <section x-cloak x-show="openEmojiPicker" x-transition:enter="transition  ease-out duration-180 transform"
