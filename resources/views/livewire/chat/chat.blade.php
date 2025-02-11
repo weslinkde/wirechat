@@ -138,20 +138,18 @@
         loadEmojiPicker();
     "
     @scroll-bottom.window="
-
-
+            setTimeout(() => {
             requestAnimationFrame(() => {
                 {{-- overflow-y: hidden; is used to hide the vertical scrollbar initially. --}}
                 conversationElement.style.overflowY='hidden';
-
                 {{-- scroll the element down --}}
                 conversationElement.scrollTop = conversationElement.scrollHeight;
-
                 {{-- After updating the chat height, overflowY is set back to 'auto',
                     which allows the browser to determine whether to display the scrollbar
                     based on the content height.  --}}
                    conversationElement.style.overflowY='auto';
-            });
+            })
+            }, 120);
 
     "
     class=" w-full transition  bg-white/95 dark:bg-gray-900  overflow-hidden  h-full relative" style="contain:content">
@@ -180,7 +178,7 @@
         {{-- -Footer--- --}}
         {{-- ---------- --}}
 
-        <footer class="shrink-0 h-auto relative   sticky bottom-0 mt-auto">
+        <footer class="shrink-0 h-auto relative sticky bottom-0 mt-auto">
 
 
             {{-- @dd(['is Admin'=>$authParticipant->isAdmin(),$authParticipant,$authParticipant->particapantable]) --}}
