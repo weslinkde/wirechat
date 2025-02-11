@@ -104,7 +104,13 @@ class NotifyParticipants implements ShouldQueue
         }
 
         $messageBody = $message->body ?: __('wirechat.Sent an attachment');
-        $messageUrl = route(WireChat::viewRouteName(), [$message->conversation->ulid]);
+        if ($this->conversation->isGroup()) {
+            $group = $this->conversation->group->group;
+            $messageUrl = route('filament.tenant.resources.groups.view', ['record' => $group->slug]) . '?active_tab=chat_tab';
+        } else {
+            $messageUrl = route(WireChat::viewRouteName(), [$message->conversation->ulid]);
+        }
+
         $notification = CreateDatabaseNotificationsJob::createNotification($this->auth, 1, $messageBody, $messageUrl);
 
         $causer = [
@@ -113,13 +119,11 @@ class NotifyParticipants implements ShouldQueue
         ];
 
         if ($user->online) {
-            if (! $user->is_chat_open /*|| $this->auth->id !== $user->active_chat*/) {
-                \Log::debug('do notify participant');
+            if (! $user->is_chat_open) {
                 $user->notify($notification->toBroadcast());
                 //Uncomment the following line to enable database notification (notification bell)
                 $user->notify(new CauserDatabaseNotification($notification, $causer));
             }
-            \Log::debug('chat is open, noop, dont notify');
         } else {
             \Log::debug('participant not online, send database notification');
             $user->notify(new CauserDatabaseNotification($notification, $causer));
