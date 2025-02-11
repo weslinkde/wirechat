@@ -15,8 +15,10 @@ use Namu\WireChat\Enums\MessageType;
 use Namu\WireChat\Facades\WireChat;
 use Namu\WireChat\Traits\Actionable;
 use Spatie\Image\Manipulations;
+use Spatie\MediaLibrary\Conversions\Conversion;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\MediaCollection;
 
 class Message extends Model implements HasMedia
 {
@@ -121,6 +123,10 @@ class Message extends Model implements HasMedia
                 $attachment = $message->media('attachments')->get()->first();
                 //delete attachment
                 $attachment?->delete();
+            }
+
+            if ($message->groupAttachment) {
+                $message->groupAttachment->delete();
             }
 
             // Use a DB transaction to ensure atomicity
