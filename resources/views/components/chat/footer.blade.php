@@ -367,7 +367,7 @@
                                 <input dusk="media-upload-input"
                                       wire:loading.attr="disabled"
                                     @change="handleFileSelect(event, {{ count($media) }})" type="file" multiple
-                                    accept="{{ Helper::formattedMediaMimesForAcceptAttribute() }}" class="sr-only"
+                                    accept="{{ \RalphJSmit\Filament\MediaLibrary\FilamentMediaLibrary::get()->getAcceptedFileTypes()->implode(',') }}" class="sr-only"
                                     style="display: none">
 
                                 <div
@@ -483,7 +483,7 @@
             isUploading: false, // Indicates if files are currently uploading
             MAXFILES: @json(config('wirechat.attachments.max_uploads', 5)), // Maximum number of files allowed
             maxSize: @json(config('wirechat.attachments.media_max_upload_size', 12288)) * 1024, // Max size per file (in bytes)
-            allowedFileTypes: type === 'media' ? @json(config('wirechat.attachments.media_mimes')) : @json(config('wirechat.attachments.file_mimes')), // Allowed MIME types based on type
+            allowedFileTypes: type === 'media' ? @json(\RalphJSmit\Filament\MediaLibrary\FilamentMediaLibrary::get()->getAcceptedFileTypes()->implode(',')) : @json(config('media-library.file_manager.additional_accepted_file_types')), // Allowed MIME types based on type
             progress: 0, // Progress of the current upload (0-100)
             wireModel: type, // The Livewire model to bind to
     
@@ -587,14 +587,14 @@
     
                 // Filter invalid files based on size and type
                 const invalidFiles = Array.from(files).filter((file) => {
-                    const fileType = file.type.split('/')[1].toLowerCase(); // Extract file extension
-                    return file.size > this.maxSize || !this.allowedFileTypes.includes(fileType); // Check size and type
+                    let mimeAllowed = file.type.match('image/*') || this.allowedFileTypes.includes(file.type);
+                    return file.size > this.maxSize || ! mimeAllowed; // Check size and type
                 });
     
                 // Filter valid files
                 const validFiles = Array.from(files).filter((file) => {
-                    const fileType = file.type.split('/')[1].toLowerCase();
-                    return file.size <= this.maxSize && this.allowedFileTypes.includes(fileType);
+                    let mimeAllowed = file.type.match('image/*') || this.allowedFileTypes.includes(file.type);
+                    return file.size <= this.maxSize && mimeAllowed;
                 });
     
                 // Handle invalid files by showing appropriate error messages

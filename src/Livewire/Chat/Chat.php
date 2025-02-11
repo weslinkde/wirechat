@@ -381,7 +381,6 @@ class Chat extends Component
 
                 //dispatch event 'refresh ' to chatlist
                 $this->dispatch('refresh')->to(Chats::class);
-                $this->dispatch('scroll-bottom');
 
                 //broadcast message
                 $this->dispatchMessageCreatedEvent($message);
