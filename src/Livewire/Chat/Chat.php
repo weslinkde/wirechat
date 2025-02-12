@@ -11,13 +11,11 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
-//use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Namu\WireChat\Enums\ConversationType;
 use Namu\WireChat\Enums\MessageType;
-use Namu\WireChat\Events\BroadcastMessageEvent;
 use Namu\WireChat\Events\MessageCreated;
 use Namu\WireChat\Events\MessageDeleted;
 use Namu\WireChat\Events\NotifyParticipant;
@@ -27,7 +25,6 @@ use Namu\WireChat\Models\Attachment;
 use Namu\WireChat\Models\Conversation;
 use Namu\WireChat\Models\Message;
 use Namu\WireChat\Models\Participant;
-use Namu\WireChat\Notifications\NewMessageNotification;
 use RalphJSmit\Filament\MediaLibrary\FilamentMediaLibrary;
 
 class Chat extends Component
@@ -337,7 +334,7 @@ class Chat extends Component
             }
             $mediaLibraryFolder = null;
             // Create folder structure in media library for group attachments
-            if ($this->groupView && $this->conversation->group?->group) {
+            if ($this->conversation->isGroup() && $this->conversation->group?->group) {
                 $groupFolder = MediaFolderService::createDefaultFolder(
                     model: $this->conversation->group->group,          // Pass the Namu\WireChat\Models\Group instance
                     groupId: $this->conversation->group->group->id,    // ID of the App\Models\Group
@@ -582,24 +579,15 @@ class Chat extends Component
             return null;
         }
 
-        // send broadcast message only to others
-        // we add try catch to avoid runtime error when broadcasting services are not connected
-        // todo create a job to broadcast multiple messages
         try {
-
-            // event(new BroadcastMessageEvent($message,$this->conversation));
-
-            //!remove the receiver from the messageCreated and add it to the job instead
-            //!also do not forget to exlude auth user or message owner from particpants
-            // sleep(3);
             broadcast(new MessageCreated($message))->toOthers();
 
             if ($this->conversation->isPrivate() || $this->conversation->isSelf()) {
                 if ($this->conversation->isPrivate() && $this->receiverParticipant) {
-                    NotifyParticipants::dispatch($this->conversation, $message);
+                    NotifyParticipants::dispatch($this->conversation, $message, tenant());
                 }
             } else {
-                NotifyParticipants::dispatch($this->conversation, $message);
+                NotifyParticipants::dispatch($this->conversation, $message, tenant());
             }
 
         } catch (\Throwable $th) {
