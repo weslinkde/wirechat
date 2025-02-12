@@ -118,7 +118,6 @@
         initializing: true,
         conversationElement: document.getElementById('conversation'),
         'loadEmojiPicker': function() {
-
             let script = document.createElement('script');
             script.type = 'module';
             script.src = 'https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js';
@@ -128,8 +127,6 @@
     }" x-init="setTimeout(() => {
         $wire.dispatch('focus-input-field');
         requestAnimationFrame(() => {
-
-
             initializing = false;
         });
 
