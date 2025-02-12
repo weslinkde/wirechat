@@ -316,21 +316,20 @@ class Chat extends Component
             $maxUploads = config('wirechat.attachments.max_uploads');
 
             //Files
-            $fileMimes = implode(',', config('wirechat.attachments.file_mimes'));
+            $fileMimes = FilamentMediaLibrary::get()->getAcceptedFileTypes()->implode(',');
             $fileMaxUploadSize = config('wirechat.attachments.file_max_upload_size');
 
             //media
-            $mediaMimes = implode(',', config('wirechat.attachments.media_mimes'));
+            $mediaMimes = FilamentMediaLibrary::get()->getAcceptedFileTypes()->implode(',');
             $mediaMaxUploadSize = config('wirechat.attachments.media_max_upload_size');
 
             try {
                 //$this->js("alert('message')");
                 $this->validate([
                     'files' => "max:$maxUploads|nullable",
-                    'files.*' => "mimes:$fileMimes|max:$fileMaxUploadSize",
+                    'files.*' => "mimetypes:$fileMimes|max:$fileMaxUploadSize",
                     'media' => "max:$maxUploads|nullable",
-                    'media.*' => "max:$mediaMaxUploadSize|mimes:$mediaMimes",
-
+                    'media.*' => "max:$mediaMaxUploadSize|mimetypes:$mediaMimes",
                 ]);
             } catch (\Illuminate\Validation\ValidationException $th) {
 
