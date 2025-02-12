@@ -437,7 +437,8 @@ class Conversation extends Model
             }, $this->messages->pluck('id')->toArray());
 
             $notifications = DatabaseNotification::where('data->causer_type', Message::class)
-                ->whereIn('data->causer_id', $stringMessageIds);
+                ->where('notifiable_type', User::class)
+                ->whereIn('notifiable_id', $stringMessageIds);
 
             //$notifications->ddRawSql(); //debug query
 
