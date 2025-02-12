@@ -118,14 +118,14 @@ class NotifyParticipants implements ShouldQueue
             'causer_id' => $message->id,
         ];
 
-        if ($user->online) {
-            if (! $user->is_chat_open) {
-                $user->notify($notification->toBroadcast());
-                //Uncomment the following line to enable database notification (notification bell)
-                $user->notify(new CauserDatabaseNotification($notification, $causer));
-            }
+        if ($user->online && $user->active_chat == $this->conversation->id) {
+            return; // User is in the chat currently
+        }
+
+        if ($user->online && $user->browser_tab_active) {
+            $user->notify($notification->toBroadcast()); // In app popup
         } else {
-            \Log::debug('participant not online, send database notification');
+            // Notification bell
             $user->notify(new CauserDatabaseNotification($notification, $causer));
         }
     }
