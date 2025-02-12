@@ -113,7 +113,7 @@ class NotifyParticipants implements ShouldQueue
             return; // User is in the chat currently
         }
 
-        \Log::info("Notify user {$user->name} who has active chat {$user->active_chat} vs current conversation id {$this->conversation->id}");
+        //\Log::debug("Notify user {$user->name} who has active chat {$user->active_chat} vs current conversation id {$this->conversation->id}");
 
         if ($user->online && $user->browser_tab_active) {
             $user->notify($notification->toBroadcast()); // In app popup
