@@ -7,13 +7,14 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Namu\WireChat\Facades\WireChat;
 use Namu\WireChat\Models\Message;
 
-class MessageCreated implements ShouldBroadcast
+class MessageCreated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithQueue,InteractsWithSockets, Queueable ,SerializesModels;
 

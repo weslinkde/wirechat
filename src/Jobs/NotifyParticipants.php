@@ -3,6 +3,7 @@
 namespace Namu\WireChat\Jobs;
 
 use App\Jobs\CreateDatabaseNotificationsJob;
+use App\Models\Tenant;
 use App\Notifications\CauserDatabaseNotification;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -19,7 +20,17 @@ use Namu\WireChat\Models\Participant;
 
 class NotifyParticipants implements ShouldQueue
 {
-    use Batchable,Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable,Dispatchable, InteractsWithQueue, Queueable;
+    use SerializesModels {
+        __unserialize as public baseUnserialize;
+    }
+    // We need this because the job is not aware of the tenant context.
+    public function __unserialize(array $values)
+    {
+        $tenantId = optional($values['tenant'])->id;
+        $tenant = tenancy()->initialize(Tenant::find($tenantId));
+        $this->baseUnserialize($values);
+    }
 
     /**
      * Set a maximum time limit of 60 seconds for the job.
@@ -33,38 +44,18 @@ class NotifyParticipants implements ShouldQueue
 
     protected $auth;
 
-    protected $messagesTable;
-
-    protected $participantsTable;
-
     public function __construct(
-
         public Model $conversation,
         #[WithoutRelations]
-        public Message $message)
+        public Message $message,
+        public Tenant $tenant)
     {
         $this->onQueue(WireChat::notificationsQueue());
-        $this->auth = $message->sendable;
-        //Get table
-        $this->participantsTable = (new Participant)->getTable();
     }
 
-    /**
-     * Get the middleware the job should pass through.
-     */
-    // public function middleware(): array
-    // {
-
-    //     return [
-    //         new SkipIfOlderThanSeconds(60), // You can pass a custom max age in seconds
-    //     ];
-    // }
-
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
+        $this->auth = $this->message->sendable;
         // Check if the message is too old
         $messageAgeInSeconds = now()->diffInSeconds($this->message->created_at);
 
@@ -121,6 +112,8 @@ class NotifyParticipants implements ShouldQueue
         if ($user->online && $user->active_chat == $this->conversation->id) {
             return; // User is in the chat currently
         }
+
+        \Log::info("Notify user {$user->name} who has active chat {$user->active_chat} vs current conversation id {$this->conversation->id}");
 
         if ($user->online && $user->browser_tab_active) {
             $user->notify($notification->toBroadcast()); // In app popup

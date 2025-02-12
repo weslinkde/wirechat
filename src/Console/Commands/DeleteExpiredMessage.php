@@ -14,7 +14,7 @@ class DeleteExpiredMessage extends Command
     public function handle()
     {
         // Run the job that deletes expired messages
-        DeleteExpiredMessagesJob::dispatch();
+        DeleteExpiredMessagesJob::dispatchNow();
 
         $this->info('Expired messages have been deleted successfully!');
     }
