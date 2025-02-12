@@ -2,6 +2,9 @@
 
 namespace Namu\WireChat\Jobs;
 
+use App\Filament\Tenant\Pages\Chat\Chat;
+use App\Filament\Tenant\Resources\GroupResource\Pages\ShowGroup;
+use App\Jobs\Concerns\TenantAwareSerialize;
 use App\Jobs\CreateDatabaseNotificationsJob;
 use App\Models\Tenant;
 use App\Notifications\CauserDatabaseNotification;
@@ -12,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\Attributes\WithoutRelations;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Namu\WireChat\Events\NotifyParticipant;
 use Namu\WireChat\Facades\WireChat;
 use Namu\WireChat\Models\Message;
@@ -20,17 +22,7 @@ use Namu\WireChat\Models\Participant;
 
 class NotifyParticipants implements ShouldQueue
 {
-    use Batchable,Dispatchable, InteractsWithQueue, Queueable;
-    use SerializesModels {
-        __unserialize as public baseUnserialize;
-    }
-    // We need this because the job is not aware of the tenant context.
-    public function __unserialize(array $values)
-    {
-        $tenantId = optional($values['tenant'])->id;
-        $tenant = tenancy()->initialize(Tenant::find($tenantId));
-        $this->baseUnserialize($values);
-    }
+    use Batchable,Dispatchable, InteractsWithQueue, Queueable, TenantAwareSerialize;
 
     /**
      * Set a maximum time limit of 60 seconds for the job.
@@ -95,11 +87,12 @@ class NotifyParticipants implements ShouldQueue
         }
 
         $messageBody = $message->body ?: __('wirechat.Sent an attachment');
+        $messageUrl = 'https://'.$this->tenant->domain->fullDomain;
         if ($this->conversation->isGroup()) {
             $group = $this->conversation->group->group;
-            $messageUrl = route('filament.tenant.resources.groups.view', ['record' => $group->slug]) . '?active_tab=chat_tab';
+            $messageUrl .=  ShowGroup::getUrl(['record' => $group->slug], false, 'tenant').'?active_tab=chat_tab';
         } else {
-            $messageUrl = route(WireChat::viewRouteName(), [$message->conversation->ulid]);
+            $messageUrl .= Chat::getUrl(['conversation' => $this->conversation->ulid], false, 'tenant');
         }
 
         $notification = CreateDatabaseNotificationsJob::createNotification($this->auth, 1, $messageBody, $messageUrl);
