@@ -97,7 +97,7 @@
                     <input 
                     wire:loading.attr="disabled"
                     @change="handleFileSelect(event,{{ count($media) }})" type="file" multiple
-                        accept="{{ Helper::formattedMediaMimesForAcceptAttribute() }}" class="sr-only">
+                    class="sr-only">
                     <span class="m-auto ">
 
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
@@ -294,30 +294,12 @@
 
                     <x-slot name="trigger"   wire:loading.attr="disabled">
                         <span dusk="upload-trigger-button">
-
-                            {{-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                        stroke="currentColor" class="w-7 h-7 dark:text-white/90">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                        </svg> --}}
-                            {{-- <svg  xmlns="http://www.w3.org/2000/svg"
-                                            width="16" height="16" fill="currentColor"
-                                            class="bi bi-plus-lg w-6 h-6 text-gray-600 dark:text-white/90" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd"
-                                                d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
-                                        </svg> --}}
-
-                            {{-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.3" stroke="currentColor" class="size-6 w-7 h-7 text-gray-600 dark:text-white/90">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
-                                          </svg> --}}
                             <svg class="size-6 w-7 h-7 text-gray-600 dark:text-white/60"
                                 xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"
                                 stroke-linejoin="round" class="ai ai-Attach">
-                                <path
-                                    d="M6 7.91V16a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v9.182a2 2 0 0 0 2 2v0a2 2 0 0 0 2-2V8" />
+                                <path d="M6 7.91V16a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v9.182a2 2 0 0 0 2 2v0a2 2 0 0 0 2-2V8" />
                             </svg>
-
                         </span>
 
                     </x-slot>
@@ -334,7 +316,8 @@
                                     wire:loading.attr="disabled"
                                     dusk="file-upload-input"
                                     @change="handleFileSelect(event, {{ count($files) }})" type="file" multiple
-                                    accept="{{ Helper::formattedFileMimesForAcceptAttribute() }}" class="sr-only"
+                                    class="sr-only"
+                                    accept="application/*, text/*"
                                     style="display: none">
 
                                 <div
@@ -367,7 +350,8 @@
                                 <input dusk="media-upload-input"
                                       wire:loading.attr="disabled"
                                     @change="handleFileSelect(event, {{ count($media) }})" type="file" multiple
-                                    accept="{{ \RalphJSmit\Filament\MediaLibrary\FilamentMediaLibrary::get()->getAcceptedFileTypes()->implode(',') }}" class="sr-only"
+                                    class="sr-only"
+                                    accept="image/*"
                                     style="display: none">
 
                                 <div
@@ -441,11 +425,10 @@
             {{-- input Actions --}}
             {{-------------------}}
 
-            <div x-cloak
-                @class([ 'w-[5%] justify-end min-w-max  items-center gap-2 ', ])>
+            <div x-cloak @class([ 'w-[5%] justify-end min-w-max  items-center gap-2 ', ])>
 
                 {{--  Submit button --}}
-                    <button    x-show="((body?.trim()?.length>0) ||  $wire.media.length > 0 || $wire.files.length > 0 )"
+                    <button x-show="((body?.trim()?.length>0) ||  $wire.media.length > 0 || $wire.files.length > 0 )"
                         wire:loading.attr="disabled" type="submit" id="sendMessageButton" class=" ml-auto disabled:cursor-progress font-bold">
 
                         <svg class="w-7 h-7   dark:text-gray-200" xmlns="http://www.w3.org/2000/svg" width="36"
@@ -457,8 +440,6 @@
     
                     </button>
 
-               
-
                 {{-- send Like button--}}
                     <button  x-show="!((body?.trim()?.length>0) || $wire.media.length > 0 || $wire.files.length > 0 )"
                        wire:loading.attr="disabled" wire:click='sendLike()' type="button" class="group disabled:cursor-progress">
@@ -466,7 +447,6 @@
                         <x-heroicon-s-check-circle class="size-6 lg:size-12" />
                     </button>
 
-               
             </div>
 
         </form>
@@ -483,7 +463,7 @@
             isUploading: false, // Indicates if files are currently uploading
             MAXFILES: @json(config('wirechat.attachments.max_uploads', 5)), // Maximum number of files allowed
             maxSize: @json(config('wirechat.attachments.media_max_upload_size', 12288)) * 1024, // Max size per file (in bytes)
-            allowedFileTypes: type === 'media' ? @json(\RalphJSmit\Filament\MediaLibrary\FilamentMediaLibrary::get()->getAcceptedFileTypes()->implode(',')) : @json(config('media-library.file_manager.additional_accepted_file_types')), // Allowed MIME types based on type
+            allowedFileTypes: @json(\RalphJSmit\Filament\MediaLibrary\FilamentMediaLibrary::get()->getAcceptedFileTypes()->implode(',')),
             progress: 0, // Progress of the current upload (0-100)
             wireModel: type, // The Livewire model to bind to
     
