@@ -175,7 +175,7 @@
                                         {{-- Only show if AUTH is onwer of message --}}
                                         @if ($belongsToAuth)
                                             <span class="font-bold text-xs dark:text-white/90 dark:font-normal">
-                                                You:
+                                                {{__('wirechat.You')}}:
                                             </span>
                                         @elseif(!$belongsToAuth && $group !== null)
                                             <span class="font-bold text-xs dark:text-white/80 dark:font-normal">
@@ -203,7 +203,7 @@
 
                                     <span class="font-medium px-1 text-xs shrink-0 text-gray-800 dark:text-gray-50">
                                         @if ($lastMessage->created_at->diffInMinutes(now()) < 1)
-                                            now
+                                            {{__('wirechat.now')}}
                                         @else
                                             {{ $lastMessage->created_at->shortAbsoluteDiffForHumans() }}
                                         @endif
