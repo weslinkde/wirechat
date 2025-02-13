@@ -430,19 +430,19 @@ class Conversation extends Model
         if (! $user) {
             return null;
         }
-
-        if ($this->messages->count()) {
+        $unredMessages = $this->unreadMessages($user);
+        if ($unredMessages->count()) {
+            // Mark all database chat message notifications as read
             $stringMessageIds = array_map(function ($value) {
                 return (string) $value;
-            }, $this->messages->pluck('id')->toArray());
+            }, $unredMessages->pluck('id')->toArray());
 
             $notifications = DatabaseNotification::where('data->causer_type', Message::class)
                 ->where('notifiable_type', User::class)
-                ->whereIn('notifiable_id', $stringMessageIds);
-
-            //$notifications->ddRawSql(); //debug query
-
-            $notifications->get()->each->update(['read_at' => now()]);
+                ->whereIn('data->causer_id', $stringMessageIds)
+                ->where('notifiable_id', $user->id);
+            //\Log::info('notifications sql ' . $notifications->toRawSql()); //debug query
+            $notifications->get()->each->markAsRead();
         }
 
         $this->participant($user)?->update(['conversation_read_at' => now()]);
