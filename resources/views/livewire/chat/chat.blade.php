@@ -126,6 +126,14 @@
         }
     }" x-init="setTimeout(() => {
         $wire.dispatch('focus-input-field');
+        const goTo = (new URLSearchParams(window.location.search)).get('goToMsg');
+        if (goTo) { //Search for message
+            let messageEl = document.getElementById('chat-msg-'+goTo);
+            if (messageEl) {
+                messageEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' }); //Scroll to searched message
+                document.querySelector('#chat-msg-'+goTo+' .wire-message-box').classList.add('animate-pulse'); //Pulsate search message
+            }
+        }
         requestAnimationFrame(() => {
             initializing = false;
         });

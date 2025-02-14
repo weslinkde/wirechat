@@ -90,7 +90,7 @@
                 @endphp
 
 
-                <div class="flex gap-2" wire:key="message-{{ $key }}"  >
+                <div class="flex gap-2" wire:key="message-{{ $key }}" id="chat-msg-{{$message->id}}" >
 
                     {{-- Message user Avatar --}}
                     {{-- Hide avatar if message belongs to auth --}}
@@ -156,7 +156,7 @@
 
                             {{-- Body section --}}
                             <div @class([
-                                'flex gap-1 md:gap-4 group transition-transform ',
+                                'flex gap-1 md:gap-4 group transition-transform wire-message-box',
                                 'justify-end' => $belongsToAuth,
                             ])>
 

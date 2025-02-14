@@ -649,10 +649,18 @@ class Chat extends Component
         // Fetch paginated messages
         $messages = $this->conversation->messages()
             ->with('sendable', 'parent', 'attachment')
-            ->orderBy('created_at', 'asc')
-            ->skip($this->totalMessageCount - $this->paginate_var)
-            ->take($this->paginate_var)
-            ->get();  // Fetch messages as Eloquent collection
+            ->orderBy('created_at', 'asc');
+
+        if (! request()->query('goToMsg')) {
+            // When url has goToMsg, that means the url is generated from the global search result
+            // Because we dont know how old this message is, we need to load all conversation messages not only a limited paginate_var messages
+            // Then we will scroll the message into view and pulsate it @see wirechat::livewire.chat.chat x-init
+            $messages
+                ->skip($this->totalMessageCount - $this->paginate_var)
+                ->take($this->paginate_var);
+        }
+
+        $messages = $messages->get();  // Fetch messages as Eloquent collection
 
         // Calculate whether more messages can be loaded
         // Group the messages
